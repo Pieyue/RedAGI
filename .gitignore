@@ -271,4 +271,7 @@ $RECYCLE.BIN/
 # claude
 .claude/
 
+# Project-specific ignores
+backend/test.py
+
 # End of https://www.toptal.com/developers/gitignore/api/react,venv,python,git,windows,linux
