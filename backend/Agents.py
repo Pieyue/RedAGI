@@ -626,21 +626,21 @@ class Session:
                 elif idle_counter > 60 and one_min_remind_flag == False:
                     # 连续1分钟所有Agent空闲，向Leader发送提醒并重置计数器
                     asyncio.create_task(
-                        self._invoke_agent(self.agents["leader"], "System", json.dumps({"From": "System", "content": f"已有30分钟未执行任何操作，如果任务还未完成，请询问{last_agent.name}当前状态，如果失联请派其它Agent代替，如果无需进一步操作或需要等待用户发送新指示请调用stop_task停止行动\n这是系统消息，无需回复"}, ensure_ascii=False))
+                        self._invoke_agent(self.agents["leader"], "System", json.dumps({"From": "System", "content": f"整个系统已有1分钟未执行任何操作，如果任务还未完成，请询问{last_agent.name}当前状态，如果失联请派其它Agent代替，如果无需进一步操作或需要等待用户发送新指示请调用stop_task停止行动\n这是系统消息，无需回复"}, ensure_ascii=False))
                     )
                     one_min_remind_flag = True
 
                 elif idle_counter > 30 and not self._tool_use_event.is_set() and not ten_sec_remind_flag:
-                    # 连续10秒所有Agent空闲，向最后收到消息的Agent发送提醒
+                    # 连续30秒所有Agent空闲，向最后收到消息的Agent发送提醒
                     if last_agent.name == "leader":
                         asyncio.create_task(
                             self._invoke_agent(last_agent, "System", json.dumps(
-                                {"From": "System", "content": "已有10分钟未执行任何操作，请检查状态，如果无需进一步操作或需要等待用户发送新指示请调用stop_task停止行动\n这是系统消息，无需回复"},
+                                {"From": "System", "content": "你已经30秒没有活动，请检查状态，如果无需进一步操作或需要等待用户发送新指示请调用stop_task停止行动\n这是系统消息，无需回复"},
                                 ensure_ascii=False))
                         )
                     else:
                         asyncio.create_task(
-                            self._invoke_agent(last_agent, "System", json.dumps({"From": "System", "content": "已有10分钟未执行任何操作，请检查状态，如果你的任务已完成请向leader汇报\n这是系统消息，无需回复"}, ensure_ascii=False))
+                            self._invoke_agent(last_agent, "System", json.dumps({"From": "System", "content": "你已经30秒没有活动，请检查状态，如果你的任务已完成请向leader汇报\n这是系统消息，无需回复"}, ensure_ascii=False))
                         )
                     ten_sec_remind_flag = True
             else:
