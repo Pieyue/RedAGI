@@ -1,6 +1,6 @@
-# RedAGI — AI Red Team Collaboration System
-
 <div align="center">
+
+# RedAGI — AI Red Team Collaboration System
 
 **An Automated Red Team Penetration Testing Platform Powered by Multi-Agent Collaboration**
 
@@ -267,6 +267,14 @@ Open your browser and navigate to the frontend URL. Log in using the credentials
 5. **AI-Generated Content**: This system uses large language models to drive Agent behavior. AI-generated content may contain inaccuracies or errors. Users should independently verify all outputs and should not rely solely on AI outputs as a single source of truth.
 
 6. **Tool Risks**: The system executes actual penetration testing commands through Kali Linux. Certain operations may impact target systems. Users should fully understand the risks of executed commands and operate in a controlled environment.
+
+## Roadmap
+
+1. Study existing multi-agent automated penetration testing systems and academic papers to explore best practices for multi-agent collaboration.
+2. Strengthen security by containerizing the frontend, backend, database, and Kali host into Docker containers, with IP whitelisting to safeguard system access.
+3. Add SMS / email verification code functionality.
+4. Introduce new Agents (reverse engineering, summarization, image recognition, etc.) to assist in red team operations.
+5. Conduct extensive testing to ensure system stability.
 
 ## License
 
