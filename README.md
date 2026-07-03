@@ -164,7 +164,7 @@ RedAGI/
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Pieyue/RedAGI.git
 cd RedAGI
 ```
 
@@ -190,9 +190,9 @@ Edit `backend/.env` and configure the following key settings:
 
 ```ini
 # LLM configuration (each Agent can use a different model independently)
-LEADER_BASE_URL=https://api.deepseek.com
+LEADER_BASE_URL=your-llm-url
 LEADER_API_KEY=your-api-key
-LEADER_MODEL=deepseek-chat
+LEADER_MODEL=your-llm-model
 # ... same for other Agents
 
 # Database

@@ -160,7 +160,7 @@ RedAGI/
 ### 1. 克隆项目
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Pieyue/RedAGI.git
 cd RedAGI
 ```
 
@@ -186,16 +186,16 @@ pip install -r requirements.txt
 
 ```ini
 # LLM 配置（每个 Agent 可独立配置不同模型）
-LEADER_BASE_URL=https://api.deepseek.com
+LEADER_BASE_URL=your-llm-url
 LEADER_API_KEY=your-api-key
-LEADER_MODEL=deepseek-chat
+LEADER_MODEL=your-llm-model
 # ... 其他 Agent 同理
 
 # 数据库
 DATABASE_URL=postgresql://user:password@localhost:5432/RedAGI
 
 # Kali SSH 配置
-KALI_HOST=192.168.x.x
+KALI_HOST=
 KALI_SSH_KEY=<base64 编码的 SSH 私钥>
 
 # 奇安信Hunter网络空间测绘（可选）
