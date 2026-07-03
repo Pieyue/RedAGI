@@ -133,7 +133,7 @@ async def stop_project_task(session_id: str) -> bool:
     project = _projects.get(session_id)
     if project is None:
         return False
-    await project._stop_task(force=True)
+    await project._stop_task(name="user")
     return True
 
 

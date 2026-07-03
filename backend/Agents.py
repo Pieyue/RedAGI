@@ -1702,44 +1702,58 @@ class Session:
             return f"[Error] 进度管理失败: {e}"
 
     # 行动停止工具
-    async def _stop_task(self, force:bool = False) -> str:
+    async def _stop_task(self, name:str = "leader") -> str:
         """
         如果你认为行动已经完成/失败，可以终止了，或者遇到无法处理的问题需要用户介入，就调用这个工具
         调用后，不要再执行其它任何操作，也不要回复其它队员的消息，结束对话
-        :param force: 强制终止，只能用户使用
+        :param name: 调用者身份，leader 调用时会检查未完成任务，user 调用时强制终止
         :return: 操作成功/失败
         """
-        # 非强制模式下，先检查消息队列中是否还有未派发的消息
-        if not force and self.message_queue.qsize() > 0:
-            return "[Error] 消息队列中还有未派发的消息，请先等待所有Agent回复 task_complete 后再调用 stop_task"
-        # 非强制模式下，检查是否有 Agent 仍在工作
-        if not force:
-            for busy_agent, busy_status in self.agents_status.items():
-                if busy_agent != "leader" and busy_status.is_set():
-                    return f"[Error] {busy_agent} 正在工作，请等待其执行完成并返回结果后再调用 stop_task"
-        # 非强制模式下，检查进度表中是否所有步骤都已完成（done 或 fail）
-        if not force:
+        # user 强制终止，跳过所有检查
+        if name == "user":
+            self.stop_event.set()
+            print(f"[Info] {self.session_id} 用户强制终止任务")
             try:
-                async with get_global_db_conn().cursor() as cur:
-                    await cur.execute(
-                        "SELECT num, title, status FROM progress WHERE session_id = %s AND status NOT IN ('done', 'fail')",
-                        (self.session_id,)
-                    )
-                    incomplete = await cur.fetchall()
-                    if incomplete:
-                        incomplete_info = ", ".join([f"#{r[0]} {r[1]}({r[2]})" for r in incomplete])
-                        return f"[Error] 以下任务步骤尚未完成，请等待相关Agent回复 task_complete 后再调用 stop_task：{incomplete_info}"
+                await self._update_session_status_async()
             except Exception as e:
-                print(f"[Warn] stop_task 检查进度表失败: {e}")
+                print(f"[Warn] _stop_task 更新会话状态失败: {e}")
+            for agent_name, conn in self.kali_conn.items():
+                try:
+                    conn.close()
+                    await conn.wait_closed()
+                    print(f"[Info] 已关闭 {agent_name} 的 Kali SSH 连接")
+                except Exception as e:
+                    print(f"[Warn] 关闭 {agent_name} Kali SSH 连接失败: {e}")
+            self.kali_conn.clear()
+            return "操作成功"
+
+        # leader 调用时，检查消息队列中是否还有未派发的消息
+        if self.message_queue.qsize() > 0:
+            return "[Error] 消息队列中还有未派发的消息，请先等待所有Agent回复 task_complete 后再调用 stop_task"
+        # leader 调用时，检查是否有 Agent 仍在工作
+        for busy_agent, busy_status in self.agents_status.items():
+            if busy_agent != "leader" and busy_status.is_set():
+                return f"[Error] {busy_agent} 正在工作，请等待其执行完成并返回结果后再调用 stop_task"
+        # leader 调用时，检查进度表中是否所有步骤都已完成（done 或 fail）
+        try:
+            async with get_global_db_conn().cursor() as cur:
+                await cur.execute(
+                    "SELECT num, title, status FROM progress WHERE session_id = %s AND status NOT IN ('done', 'fail')",
+                    (self.session_id,)
+                )
+                incomplete = await cur.fetchall()
+                if incomplete:
+                    incomplete_info = ", ".join([f"#{r[0]} {r[1]}({r[2]})" for r in incomplete])
+                    return f"[Error] 以下任务步骤尚未完成，请等待相关Agent回复 task_complete 后再调用 stop_task：{incomplete_info}"
+        except Exception as e:
+            print(f"[Warn] stop_task 检查进度表失败: {e}")
 
         self.stop_event.set()
         print(f"[Info] {self.session_id} 任务已停止")
-        # 更新数据库会话状态为 stopped
         try:
             await self._update_session_status_async()
         except Exception as e:
             print(f"[Warn] _stop_task 更新会话状态失败: {e}")
-        # 关闭 Kali SSH 连接
         for agent_name, conn in self.kali_conn.items():
             try:
                 conn.close()

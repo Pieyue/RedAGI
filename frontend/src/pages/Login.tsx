@@ -302,7 +302,7 @@ export default function LoginPage() {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="admin"
+              placeholder={t('login.username_ph')}
               style={{ width: '100%' }}
               autoFocus
             />
@@ -316,7 +316,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="admin123"
+              placeholder={t('login.password_ph')}
               style={{ width: '100%' }}
             />
           </div>

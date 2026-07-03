@@ -20,6 +20,8 @@ const translations: Record<string, Record<Lang, string>> = {
   'login.subtitle':        { zh: 'AI 红队作战系统',        en: 'AI Red Team System' },
   'login.username':        { zh: '用户名',              en: 'Username' },
   'login.password':        { zh: '密码',                en: 'Password' },
+  'login.username_ph':     { zh: '请输入用户名',         en: 'Enter username' },
+  'login.password_ph':     { zh: '请输入密码',           en: 'Enter password' },
   'login.submit':          { zh: '登录',                en: 'Sign In' },
   'login.error_required':  { zh: '请输入用户名和密码',   en: 'Please enter username and password' },
   'login.error_fail':      { zh: '登录失败，请重试',     en: 'Login failed, please retry' },
